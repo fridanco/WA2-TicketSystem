@@ -19,7 +19,7 @@ var hmacKey: Key = SecretKeySpec(Base64.getDecoder().decode(secret),SignatureAlg
 @RestController
 class ValidationController {
     @PostMapping("/validate")
-    fun responseValidate(  @RequestBody validationObject: ValidationObject) : ResponseEntity<Any> {
+    fun responseValidate(@RequestBody validationObject: ValidationObject) : ResponseEntity<Any> {
 
         var validatedJwt : Jws<Claims>
 
@@ -36,14 +36,16 @@ class ValidationController {
             return ResponseEntity("",HttpStatus.FORBIDDEN)
         }
 
-        //Get JWT body (payload) claims
-        val expiration = validatedJwt.body["exp"]
-        val validityZone = validatedJwt.body["vz"]
-        println("expiration: $expiration")
-        println("validity zones: $validityZone")
+        //Get JWT body (payload) claims & perform checks
+        val expiration = validatedJwt.body.expiration
+        if(expiration==null || expiration.before(Date())){
+            return ResponseEntity("",HttpStatus.FORBIDDEN)
+        }
 
-        //insert checks
-        //expiration time check already done by jjwt at validation
+        var validityZonesArray = validatedJwt.body.get("vz",String::class.java)?.split(",")
+        if(validityZonesArray == null || validityZonesArray.find { it==validationObject.zone } == null){
+            return ResponseEntity("",HttpStatus.FORBIDDEN)
+        }
 
         //Return response with empty body & code 200
         return ResponseEntity("",HttpStatus.OK)
