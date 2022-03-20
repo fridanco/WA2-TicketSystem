@@ -2,13 +2,14 @@ package it.polito.wa2.g17.server
 
 import io.jsonwebtoken.*
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import java.security.Key
 import java.util.*
 import javax.crypto.spec.SecretKeySpec
+
 
 
 //Encode JWT with this secret and select Base64 encoded
@@ -19,35 +20,31 @@ var hmacKey: Key = SecretKeySpec(Base64.getDecoder().decode(secret),SignatureAlg
 @RestController
 class ValidationController {
     @PostMapping("/validate")
-    fun responseValidate(@RequestBody validationObject: ValidationObject) : ResponseEntity<Any> {
+    @ResponseStatus(HttpStatus.OK)
+    fun responseValidate(@RequestBody ticketDTO: TicketDTO) {
 
-        var validatedJwt : Jws<Claims>
+        val validatedJwt : Jws<Claims>
 
         //JWT validation
-        try {
-            validatedJwt = Jwts
+        validatedJwt = Jwts
                 .parserBuilder()
                 .setSigningKey(hmacKey)
                 .build()
-                .parseClaimsJws(validationObject.token)
-            println("--valid token--")
-        } catch (e: JwtException) {
-            println("invalid token: ${e.message}")
-            return ResponseEntity("",HttpStatus.FORBIDDEN)
-        }
+                .parseClaimsJws(ticketDTO.token)
 
-        //Get JWT body (payload) claims & perform checks
+        //Get token expiration from JWT body (payload) claims & perform checks
         val expiration = validatedJwt.body.expiration
         if(expiration==null || expiration.before(Date())){
-            return ResponseEntity("",HttpStatus.FORBIDDEN)
+            throw ExpiredJwtException()
+            //return ResponseEntity("",HttpStatus.FORBIDDEN)
         }
 
-        var validityZonesArray = validatedJwt.body.get("vz",String::class.java)?.split(",")
-        if(validityZonesArray == null || validityZonesArray.find { it==validationObject.zone } == null){
-            return ResponseEntity("",HttpStatus.FORBIDDEN)
+        //Get ticket vz from JWT body (payload) claims & perform checks
+        val validityZonesArray = validatedJwt.body.get("vz",String::class.java)?.split(",")
+        if(validityZonesArray == null || validityZonesArray.find { it==ticketDTO.zone } == null){
+            throw InvalidZoneException()
+            //return ResponseEntity("",HttpStatus.FORBIDDEN)
         }
-
-        //Return response with empty body & code 200
-        return ResponseEntity("",HttpStatus.OK)
     }
+
 }
