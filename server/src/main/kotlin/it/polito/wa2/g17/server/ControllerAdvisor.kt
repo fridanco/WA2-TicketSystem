@@ -10,20 +10,26 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 class ControllerAdvisor {
 
     @ExceptionHandler(JwtException::class)
-    fun handleJwtException() : ResponseEntity<Any> {
-        println("JWT is invalid")
+    fun handleJwtException(e: JwtException) : ResponseEntity<Any> {
+        println(e.message)
         return ResponseEntity("",HttpStatus.FORBIDDEN)
     }
 
     @ExceptionHandler(ExpiredJwtException::class)
-    fun handleExpiredJWTException() : ResponseEntity<Any> {
-        println("JWT expired")
+    fun handleExpiredJWTException(e: ExpiredJwtException) : ResponseEntity<Any> {
+        println(e.message)
         return ResponseEntity("",HttpStatus.FORBIDDEN)
     }
 
     @ExceptionHandler(InvalidZoneException::class)
-    fun handleInvalidZoneException() : ResponseEntity<Any> {
-        println("Invalid ticket validity zone")
+    fun handleInvalidZoneException(e: InvalidZoneException) : ResponseEntity<Any> {
+        println(e.message)
+        return ResponseEntity("",HttpStatus.FORBIDDEN)
+    }
+
+    @ExceptionHandler(InvalidRequestBodyException::class)
+    fun handleInvalidRequestBodyException(e: InvalidRequestBodyException) : ResponseEntity<Any> {
+        println(e.message)
         return ResponseEntity("",HttpStatus.FORBIDDEN)
     }
 }

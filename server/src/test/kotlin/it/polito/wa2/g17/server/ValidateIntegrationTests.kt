@@ -5,7 +5,9 @@ import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.client.postForEntity
@@ -17,41 +19,52 @@ import java.util.*
 import javax.crypto.spec.SecretKeySpec
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class ValidateIntegrationTests() {
+class ValidateIntegrationTests : InitializingBean {
     @LocalServerPort
     protected var port: Int = 0
 
     @Autowired
     lateinit var restTemplate: TestRestTemplate
 
-    final val secret = "asdfSFS34wfsdfsdfSDSD32dfsddDDerQSNCK34SOWEK5354fdgdf4"
-    final val hmacKey: Key = SecretKeySpec(Base64.getDecoder().decode(secret), SignatureAlgorithm.HS256.jcaName)
+    @Value("\${server.jwt.secretkey}")
+    lateinit var secret : String
+
+    lateinit var hmacKey: Key
+
+    lateinit var expiredJWT : String
+    lateinit var validJWT : String
+    lateinit var validEmptyZonesJWT : String
+
+    override fun afterPropertiesSet() {
+        hmacKey = SecretKeySpec(Base64.getDecoder().decode(secret), SignatureAlgorithm.HS256.jcaName)
+
+        expiredJWT = Jwts
+            .builder()
+            .setClaims(mapOf("vz" to "123", "sub" to Math.random().toInt().toString()))
+            .setExpiration(Date())
+            .signWith(hmacKey)      //use a random key
+            .compact()
+
+        validJWT = Jwts
+            .builder()
+            .setClaims(mapOf("vz" to "123", "sub" to Math.random().toInt().toString()))
+            .setExpiration(Date(System.currentTimeMillis()+60000))
+            .signWith(hmacKey)      //use a random key
+            .compact()
+
+        validEmptyZonesJWT = Jwts
+            .builder()
+            .setClaims(mapOf("vz" to "", "sub" to Math.random().toInt().toString()))
+            .setExpiration(Date(System.currentTimeMillis()+60000))
+            .signWith(hmacKey)      //use a random key
+            .compact()
+    }
 
     var invalidSignatureJWT = Jwts
         .builder()
         .signWith(Keys.secretKeyFor(SignatureAlgorithm.HS256))      //use a random key
         .compact()
 
-    var expiredJWT = Jwts
-        .builder()
-        .setClaims(mapOf("vz" to "1,2,3", "sub" to Math.random().toInt().toString()))
-        .setExpiration(Date())
-        .signWith(hmacKey)      //use a random key
-        .compact()
-
-    var validJWT = Jwts
-        .builder()
-        .setClaims(mapOf("vz" to "1,2,3", "sub" to Math.random().toInt().toString()))
-        .setExpiration(Date(System.currentTimeMillis()+60000))
-        .signWith(hmacKey)      //use a random key
-        .compact()
-
-    var validEmptyZonesJWT = Jwts
-        .builder()
-        .setClaims(mapOf("vz" to "", "sub" to Math.random().toInt().toString()))
-        .setExpiration(Date(System.currentTimeMillis()+60000))
-        .signWith(hmacKey)      //use a random key
-        .compact()
 
     @Test
     fun rejectInvalidJWT() {
