@@ -1,27 +1,25 @@
 'use strict'
 
-createRandomRequest()
-
 import jwt from 'jsonwebtoken'
 
-export function createRandomRequest() {
+export default function createRandomRequestBody() {
 
     let jwt_payload = {
-        exp: Math.floor(Date.now() / 1000) - randomIntFromInterval(-1,3) * 30,
+        exp: Math.floor(Date.now() / 1000) + randomIntFromInterval(-1,3) * 30,
         vz: randomString(),
         sub: randomTicketIdentifier()
     }
 
     let token = jwt.sign(jwt_payload,Buffer.from("asdfSFS34wfsdfsdfSDSD32dfsddDDerQSNCK34SOWEK5354fdgdf4", 'base64'))
 
-    let zone = randomZone()
+    let zone = randomZone(jwt_payload.vz)
 
     let requestBody = JSON.stringify({
         zone: zone,
         token: token
     })
 
-    console.log(requestBody)
+    //console.log(requestBody)
 
     return requestBody
 }
@@ -56,7 +54,14 @@ function randomTicketIdentifier() {
     return randomTicketID
 }
 
-function randomZone() {
+function randomZone(jwtValidityZones) {
     let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    return possible.charAt(Math.floor(Math.random() * possible.length));
+
+    if(randomIntFromInterval(0,1)){
+        return possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    let zone = jwtValidityZones.charAt(Math.floor(Math.random() * jwtValidityZones.length));
+    return zone ? zone : ""
+
+
 }

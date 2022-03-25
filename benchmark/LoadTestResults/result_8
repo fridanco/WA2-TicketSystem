@@ -1,0 +1,19 @@
+{
+  "totalRequests": 10000,
+  "totalErrors": 7082,
+  "totalTimeSeconds": 8.6232724,
+  "rps": 1160,
+  "meanLatencyMs": 6.9,
+  "maxLatencyMs": 104,
+  "minLatencyMs": 1,
+  "percentiles": {
+    "50": 6,
+    "90": 9,
+    "95": 10,
+    "99": 14
+  },
+  "errorCodes": {
+    "403": 7082
+  },
+  "instanceIndex": 3
+}

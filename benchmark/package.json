@@ -1,6 +1,8 @@
 {
   "type": "module",
   "dependencies": {
-    "jsonwebtoken": "^8.5.1"
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^8.5.1",
+    "loadtest": "^5.2.0"
   }
 }
