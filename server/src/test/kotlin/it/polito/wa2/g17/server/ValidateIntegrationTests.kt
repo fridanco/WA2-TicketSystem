@@ -97,6 +97,36 @@ class ValidateIntegrationTests : InitializingBean {
     }
 
     @Test
+    fun rejectEmptyZone() {
+        val baseUrl = "http://localhost:$port"
+        val request = HttpEntity(TicketDTO("",validEmptyZonesJWT))
+        val response = restTemplate.postForEntity<Unit>(
+            "$baseUrl/validate",
+            request )
+        Assertions.assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
+    }
+
+    @Test
+    fun rejectEmptyJWT() {
+        val baseUrl = "http://localhost:$port"
+        val request = HttpEntity(TicketDTO("1",""))
+        val response = restTemplate.postForEntity<Unit>(
+            "$baseUrl/validate",
+            request )
+        Assertions.assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
+    }
+
+    @Test
+    fun rejectEmptyRequest() {
+        val baseUrl = "http://localhost:$port"
+        val request = HttpEntity(TicketDTO("",""))
+        val response = restTemplate.postForEntity<Unit>(
+            "$baseUrl/validate",
+            request )
+        Assertions.assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
+    }
+
+    @Test
     fun acceptValidJWT() {
         val baseUrl = "http://localhost:$port"
         val request = HttpEntity(TicketDTO("1",validJWT))

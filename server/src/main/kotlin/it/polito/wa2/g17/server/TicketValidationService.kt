@@ -43,7 +43,7 @@ class TicketValidationService : InitializingBean {
 
         //Get ticket vz from JWT body (payload) claims & perform checks
         var validTicketVZ = false
-        val validityZones = validatedJwt.body.get("vz",String::class.java)?.forEach {
+        validatedJwt.body.get("vz",String::class.java)?.forEach {
             if(it==zone.toCharArray()[0]){
                 validTicketVZ=true
             }

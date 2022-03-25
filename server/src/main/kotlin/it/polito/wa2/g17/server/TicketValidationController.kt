@@ -33,7 +33,6 @@ class ValidationController {
         }
 
         ticketValidationService.validateTicket(ticketDTO.zone, ticketDTO.token)
-
     }
 
 }
