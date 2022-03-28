@@ -5,7 +5,10 @@
     <file type="web" url="file://$PROJECT_DIR$/server" />
     <file type="web" url="file://$PROJECT_DIR$/TIcketSystem/server" />
   </component>
-  <component name="ProjectRootManager">
+  <component name="ProjectRootManager" version="2" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="jpab" />
   </component>
 </project>

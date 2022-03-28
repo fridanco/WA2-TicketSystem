@@ -1,4 +1,4 @@
-package it.polito.wa2.g17.server
+package it.polito.wa2.g17.server.dtos
 
 import javax.validation.constraints.Size
 

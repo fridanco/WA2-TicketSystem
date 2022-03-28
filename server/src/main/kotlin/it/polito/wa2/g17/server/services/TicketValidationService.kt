@@ -1,12 +1,13 @@
-package it.polito.wa2.g17.server
+package it.polito.wa2.g17.server.services
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
+import it.polito.wa2.g17.server.exceptions.ExpiredJwtException
+import it.polito.wa2.g17.server.exceptions.InvalidZoneException
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Service
 import java.security.Key
 import java.util.*
@@ -54,4 +55,7 @@ class TicketValidationService : InitializingBean {
         }
 
     }
+
+
+
 }

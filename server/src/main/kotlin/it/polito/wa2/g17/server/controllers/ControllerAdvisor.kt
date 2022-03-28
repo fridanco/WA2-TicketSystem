@@ -1,6 +1,9 @@
-package it.polito.wa2.g17.server
+package it.polito.wa2.g17.server.controllers
 
 import io.jsonwebtoken.JwtException
+import it.polito.wa2.g17.server.exceptions.ExpiredJwtException
+import it.polito.wa2.g17.server.exceptions.InvalidRequestBodyException
+import it.polito.wa2.g17.server.exceptions.InvalidZoneException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice

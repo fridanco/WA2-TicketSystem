@@ -4,6 +4,8 @@ import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
+import it.polito.wa2.g17.server.exceptions.InvalidZoneException
+import it.polito.wa2.g17.server.services.TicketValidationService
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.InitializingBean

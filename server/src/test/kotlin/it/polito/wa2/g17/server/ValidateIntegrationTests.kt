@@ -3,6 +3,7 @@ package it.polito.wa2.g17.server
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
+import it.polito.wa2.g17.server.dtos.TicketDTO
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.InitializingBean
