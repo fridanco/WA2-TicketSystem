@@ -4,8 +4,11 @@ import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
+import it.polito.wa2.g17.server.entities.Ticket
+import it.polito.wa2.g17.server.exceptions.DuplicateTicketException
 import it.polito.wa2.g17.server.exceptions.ExpiredJwtException
 import it.polito.wa2.g17.server.exceptions.InvalidZoneException
+import it.polito.wa2.g17.server.repositories.TicketRepository
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -21,6 +24,8 @@ class TicketValidationService : InitializingBean {
     lateinit var secret : String
 
     lateinit var hmacKey : Key
+
+    lateinit var ticketRepository: TicketRepository
 
     override fun afterPropertiesSet() {
         hmacKey = SecretKeySpec(Base64.getDecoder().decode(secret), SignatureAlgorithm.HS256.jcaName)
@@ -54,6 +59,19 @@ class TicketValidationService : InitializingBean {
             throw InvalidZoneException()
         }
 
+        //Check ticket unicity (check in DB)
+        val ticketID = validatedJwt?.body?.get("sub",String::class.java)
+        if(ticketID!=null && ticketID.isNotEmpty()){
+            try {
+                ticketRepository.save(Ticket().apply {
+                    id = ticketID
+                })
+            }
+            catch (ex: Exception){
+                throw DuplicateTicketException();
+            }
+
+        }
     }
 
 

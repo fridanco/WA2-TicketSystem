@@ -5,8 +5,8 @@ import javax.persistence.Entity
 import javax.persistence.Id
 
 @Entity
-open class Ticket {
+open class Ticket (
     @Id
     @Column(name = "id", nullable = false, updatable = false)
-    open var id: String? = null
-}
+    var id: String? = null
+)
