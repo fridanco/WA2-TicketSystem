@@ -10,6 +10,7 @@ import it.polito.wa2.g17.server.exceptions.ExpiredJwtException
 import it.polito.wa2.g17.server.exceptions.InvalidZoneException
 import it.polito.wa2.g17.server.repositories.TicketRepository
 import org.springframework.beans.factory.InitializingBean
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.security.Key
@@ -25,6 +26,7 @@ class TicketValidationService : InitializingBean {
 
     lateinit var hmacKey : Key
 
+    @Autowired
     lateinit var ticketRepository: TicketRepository
 
     override fun afterPropertiesSet() {
