@@ -8,9 +8,11 @@ import java.io.FileWriter
 import java.nio.file.Files
 import java.nio.file.Path
 
+fun main() {
+    CsvCreator().generateCSV()
+}
 
 class CsvCreator {
-
 
     fun generateCSV() {
 
@@ -42,6 +44,7 @@ class CsvCreator {
 
         val writer = BufferedWriter(FileWriter("./server/src/main/kotlin/it/polito/wa2/g17/csv_creator/expected_throughput.csv"))
 
+        writer.write("Concurrency Level,Throughput (rps)\n")
         expectedThroughputs.forEach{
             writer.write(""+it[0].toInt()+","+it[1]+"\n")
         }

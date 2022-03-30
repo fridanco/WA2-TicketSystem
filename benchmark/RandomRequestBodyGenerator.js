@@ -2,7 +2,7 @@
 
 import jwt from 'jsonwebtoken'
 
-export default function createRandomRequestBody(runWithDB) {
+export function createRandomRequestBody(runWithDB) {
 
     let jwt_payload = {
         exp: Math.floor(Date.now() / 1000) + randomIntFromInterval(-1,3) * 30,
