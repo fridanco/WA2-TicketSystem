@@ -7,26 +7,33 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 
-//@SpringBootApplication
-//class ServerApplication{
-//    @Bean
-//    fun showDbIsWorking(ticketRepository: TicketRepository): CommandLineRunner{
-//        return CommandLineRunner {
-//            ticketRepository.save(Ticket().apply {
-//                id = "CiaoMarioSeiUNoStronzo"
-//            })
-//        }
-//    }
-//    fun main(args: Array<String>) {
-//        runApplication<ServerApplication>(*args)
-//    }
-//}
-
 @SpringBootApplication
-class ServerApplication
+class ServerApplication {
+    @Bean
+    fun showDbIsWorking(ticketRepository: TicketRepository): CommandLineRunner{
+        return CommandLineRunner {
+            ticketRepository.save(Ticket().apply {
+                id = "CiaoMarioSeiUNoStronzo1"
+            })
+            ticketRepository.save(Ticket().apply {
+                id = "CiaoMarioSeiUNoStronzo"
+            })
+             ticketRepository.save(Ticket().apply {
+            id = "CiaoMarioSeiUNoStronzo3"
+        })
 
-fun main(args: Array<String>) {
-    runApplication<ServerApplication>(*args)
-}
+        }
+    }}
+    fun main(args: Array<String>) {
+        runApplication<ServerApplication>(*args)
+    }
+
+
+//@SpringBootApplication
+//class ServerApplication
+//
+//fun main(args: Array<String>) {
+//    runApplication<ServerApplication>(*args)
+//}
 
 

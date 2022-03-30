@@ -8,5 +8,5 @@ import javax.persistence.Id
 open class Ticket (
     @Id
     @Column(name = "id", nullable = false, updatable = false)
-    var id: String? = null
+    open var id: String? = null
 )
