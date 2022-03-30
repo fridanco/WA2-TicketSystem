@@ -16,12 +16,12 @@ WA2-TICKETSYSTEM
 |server
    |__src
        |__main
-           |     |__kotliln
-           |     |   |__...
-           |     |      |__csv_creator
-           |     |      |__server
-           |     |
-           |     |__resources
-           |     
-           |__test
+       |    |__kotliln
+       |    |   |__...
+       |    |      |__csv_creator
+       |    |      |__server
+       |    |
+       |    |__resources
+       |     
+       |__test
 ```
