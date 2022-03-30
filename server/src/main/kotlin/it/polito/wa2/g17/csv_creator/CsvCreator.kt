@@ -9,13 +9,10 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 
-fun main() {
-    val csvCreator = CsvCreator()
-    csvCreator.buildModel()
-}
+class CsvCreator {
 
-internal class CsvCreator {
-    fun buildModel() {
+
+    fun generateCSV() {
 
         val testData = mutableListOf<DoubleArray>()
         val expectedThroughputs = mutableListOf<DoubleArray>()

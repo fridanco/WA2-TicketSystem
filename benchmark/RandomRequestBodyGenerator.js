@@ -2,12 +2,12 @@
 
 import jwt from 'jsonwebtoken'
 
-export default function createRandomRequestBody() {
+export default function createRandomRequestBody(runWithDB) {
 
     let jwt_payload = {
         exp: Math.floor(Date.now() / 1000) + randomIntFromInterval(-1,3) * 30,
         vz: randomString(),
-        sub: randomTicketIdentifier()
+        sub: randomTicketIdentifier(runWithDB)
     }
 
     let token = jwt.sign(jwt_payload,Buffer.from("asdfSFS34wfsdfsdfSDSD32dfsddDDerQSNCK34SOWEK5354fdgdf4", 'base64'))
@@ -18,8 +18,6 @@ export default function createRandomRequestBody() {
         zone: zone,
         token: token
     })
-
-    //console.log(requestBody)
 
     return requestBody
 }
@@ -42,7 +40,11 @@ function randomString() {
     return randomStr
 }
 
-function randomTicketIdentifier() {
+function randomTicketIdentifier(runWithDB) {
+
+    if(runWithDB===null || !runWithDB){
+        return "";
+    }
 
     let randomTicketID = ""
     let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

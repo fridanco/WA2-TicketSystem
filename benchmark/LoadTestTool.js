@@ -4,7 +4,7 @@ import loadtest from 'loadtest';
 import createRandomRequestBody from './RandomRequestBodyGenerator.js'
 
 
-export default async function runLoadTester(concurrencyLevel){
+export default async function runLoadTester(concurrencyLevel, runWithDB, maxSeconds, timeout, agentKeepAlive){
 
     const options = {
         url: 'http://localhost:8080',
@@ -13,10 +13,11 @@ export default async function runLoadTester(concurrencyLevel){
         method: 'POST',
         body:'',
         requestGenerator: (params, options, client, callback) => {
-            const message = createRandomRequestBody();
+            let randomReqBody = createRandomRequestBody(runWithDB);
+            const message = randomReqBody;
             options.headers['Content-Length'] = message.length;
             options.headers['Content-Type'] = 'application/json';
-            options.body = createRandomRequestBody();
+            options.body = randomReqBody;
             options.path = '/validate';
             const request = client(options, callback);
             request.write(message);
