@@ -1,19 +1,19 @@
 {
   "totalRequests": 10000,
-  "totalErrors": 7094,
-  "totalTimeSeconds": 8.793659,
-  "rps": 1137,
-  "meanLatencyMs": 14,
-  "maxLatencyMs": 94,
-  "minLatencyMs": 1,
+  "totalErrors": 7067,
+  "totalTimeSeconds": 9.410824927,
+  "rps": 1063,
+  "meanLatencyMs": 15,
+  "maxLatencyMs": 89,
+  "minLatencyMs": 2,
   "percentiles": {
-    "50": 14,
-    "90": 17,
-    "95": 19,
-    "99": 28
+    "50": 13,
+    "90": 21,
+    "95": 25,
+    "99": 38
   },
   "errorCodes": {
-    "403": 7094
+    "403": 7067
   },
   "instanceIndex": 4
 }

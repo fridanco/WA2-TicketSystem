@@ -7,7 +7,7 @@ export function createRandomRequestBody() {
     let jwt_payload = {
         exp: Math.floor(Date.now() / 1000) + randomIntFromInterval(-1,3) * 30,
         vz: randomString(),
-        sub: randomTicketIdentifier()
+        sub: ""
     }
 
     let token = jwt.sign(jwt_payload,Buffer.from("asdfSFS34wfsdfsdfSDSD32dfsddDDerQSNCK34SOWEK5354fdgdf4", 'base64'))
@@ -41,6 +41,8 @@ function randomString() {
 }
 
 function randomTicketIdentifier() {
+
+
 
     let randomTicketID = ""
     let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
