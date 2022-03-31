@@ -29,6 +29,8 @@ async function performTest(concurrencyLevel){
         concurrency:concurrencyLevel,
         method: 'POST',
         body:'',
+        //timeout: 10,
+        agentKeepAlive: true,
         requestGenerator: (params, options, client, callback) => {
             let reqBody = createRandomRequestBody();
             const message = reqBody;
