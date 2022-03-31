@@ -34,7 +34,8 @@ class ValidateUnitTests : InitializingBean {
 
     lateinit var expiredJWT : String
     lateinit var validJWT : String
-    lateinit var validJWT_withDB: String
+    lateinit var validJWT_withDB_1: String
+    lateinit var validJWT_withDB_2: String
     lateinit var validEmptyZonesJWT : String
 
     override fun afterPropertiesSet() {
@@ -54,10 +55,17 @@ class ValidateUnitTests : InitializingBean {
             .signWith(hmacKey)      //use a random key
             .compact()
 
-        validJWT_withDB = Jwts
+        validJWT_withDB_1 = Jwts
             .builder()
-            .setClaims(mapOf("vz" to "123", "sub" to "aaaaaaaaabbbbbaaaaaaaaaaa"))
+            .setClaims(mapOf("vz" to "123", "sub" to "aaaaaaaaabbbbbasdaaaaaaaaaaa"))
             .setExpiration(Date(System.currentTimeMillis()+60000))
+            .signWith(hmacKey)      //use a random key
+            .compact()
+
+        validJWT_withDB_2 = Jwts
+            .builder()
+            .setClaims(mapOf("vz" to "123", "sub" to "984587126354z78432657823356"))
+            .setExpiration(Date(System.currentTimeMillis() + 60000))
             .signWith(hmacKey)      //use a random key
             .compact()
 
@@ -115,13 +123,14 @@ class ValidateUnitTests : InitializingBean {
     @Test
     fun acceptUniqueTicket(){
         Assertions.assertDoesNotThrow{
-            ticketValidationService.validateTicket("1",validJWT_withDB)
+            ticketValidationService.validateTicket("1",validJWT_withDB_1)
         }
     }
     @Test
     fun rejectDuplicateTicket(){
         Assertions.assertThrows(DuplicateTicketException::class.java){
-            ticketValidationService.validateTicket("1",validJWT_withDB)
+            ticketValidationService.validateTicket("1",validJWT_withDB_2)
+            ticketValidationService.validateTicket("1",validJWT_withDB_2)
         }
     }
 }

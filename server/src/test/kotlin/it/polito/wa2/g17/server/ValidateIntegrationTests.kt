@@ -34,7 +34,8 @@ class ValidateIntegrationTests : InitializingBean {
 
     lateinit var expiredJWT : String
     lateinit var validJWT : String
-    lateinit var validJWT_withDB : String
+    lateinit var validJWT_withDB_1 : String
+    lateinit var validJWT_withDB_2 : String
     lateinit var validEmptyZonesJWT : String
 
     override fun afterPropertiesSet() {
@@ -54,9 +55,16 @@ class ValidateIntegrationTests : InitializingBean {
             .signWith(hmacKey)      //use a random key
             .compact()
 
-        validJWT_withDB = Jwts
+        validJWT_withDB_1 = Jwts
             .builder()
             .setClaims(mapOf("vz" to "123", "sub" to "aaaaaaaaabbbbbaaaaaaaaaaa"))
+            .setExpiration(Date(System.currentTimeMillis() + 60000))
+            .signWith(hmacKey)      //use a random key
+            .compact()
+
+        validJWT_withDB_2 = Jwts
+            .builder()
+            .setClaims(mapOf("vz" to "123", "sub" to "984587126354z78432657823356"))
             .setExpiration(Date(System.currentTimeMillis() + 60000))
             .signWith(hmacKey)      //use a random key
             .compact()
@@ -148,7 +156,7 @@ class ValidateIntegrationTests : InitializingBean {
     @Test
     fun acceptUniqueTicket() {
         val baseUrl = "http://localhost:$port"
-        val request = HttpEntity(TicketDTO("1",validJWT_withDB))
+        val request = HttpEntity(TicketDTO("1",validJWT_withDB_1))
         val response = restTemplate.postForEntity<Unit>(
             "$baseUrl/validate",
             request )
@@ -158,10 +166,14 @@ class ValidateIntegrationTests : InitializingBean {
     @Test
     fun rejectDuplicateTicket() {
         val baseUrl = "http://localhost:$port"
-        val request = HttpEntity(TicketDTO("1",validJWT_withDB))
+        val request = HttpEntity(TicketDTO("1",validJWT_withDB_2))
         val response = restTemplate.postForEntity<Unit>(
             "$baseUrl/validate",
             request )
-        Assertions.assertEquals(HttpStatus.OK, response.statusCode)
+        val request1 = HttpEntity(TicketDTO("1",validJWT_withDB_2))
+        val response1 = restTemplate.postForEntity<Unit>(
+            "$baseUrl/validate",
+            request1 )
+        Assertions.assertEquals(HttpStatus.FORBIDDEN, response1.statusCode)
     }
 }
