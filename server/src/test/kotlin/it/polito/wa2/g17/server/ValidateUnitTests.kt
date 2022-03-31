@@ -77,6 +77,7 @@ class ValidateUnitTests : InitializingBean {
             .compact()
     }
 
+    //todo: perchè fuori da afterPropertiesSet?
     var invalidSignatureJWT: String = Jwts
         .builder()
         .signWith(Keys.secretKeyFor(SignatureAlgorithm.HS256))      //use a random key
@@ -84,7 +85,7 @@ class ValidateUnitTests : InitializingBean {
 
     
     @Test
-    fun rejectInvalidJWT(){
+        fun rejectInvalidJWT(){
         Assertions.assertThrows(JwtException::class.java){
             ticketValidationService.validateTicket("1",invalidSignatureJWT)
         }
