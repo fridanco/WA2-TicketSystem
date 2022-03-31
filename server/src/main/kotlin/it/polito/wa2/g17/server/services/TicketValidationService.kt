@@ -64,14 +64,12 @@ class TicketValidationService : InitializingBean {
         //Check ticket unicity (check in DB)
         val ticketID = validatedJwt?.body?.get("sub",String::class.java)
         if(ticketID!=null && ticketID.isNotEmpty()){
-            try {
+                if(!ticketRepository.findById(ticketID).isEmpty){
+                    throw DuplicateTicketException();
+                }
                 ticketRepository.save(Ticket().apply {
                     id = ticketID
                 })
-            }
-            catch (ex: Exception){
-                throw DuplicateTicketException();
-            }
 
         }
     }
