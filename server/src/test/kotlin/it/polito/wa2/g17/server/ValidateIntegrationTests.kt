@@ -34,6 +34,7 @@ class ValidateIntegrationTests : InitializingBean {
 
     lateinit var expiredJWT : String
     lateinit var validJWT : String
+    lateinit var validJWT_withDB : String
     lateinit var validEmptyZonesJWT : String
 
     override fun afterPropertiesSet() {
@@ -41,27 +42,34 @@ class ValidateIntegrationTests : InitializingBean {
 
         expiredJWT = Jwts
             .builder()
-            .setClaims(mapOf("vz" to "123", "sub" to Math.random().toInt().toString()))
+            .setClaims(mapOf("vz" to "123", "sub" to ""))
             .setExpiration(Date())
             .signWith(hmacKey)      //use a random key
             .compact()
 
         validJWT = Jwts
             .builder()
-            .setClaims(mapOf("vz" to "123", "sub" to Math.random().toInt().toString()))
+            .setClaims(mapOf("vz" to "123", "sub" to ""))
             .setExpiration(Date(System.currentTimeMillis()+60000))
+            .signWith(hmacKey)      //use a random key
+            .compact()
+
+        validJWT_withDB = Jwts
+            .builder()
+            .setClaims(mapOf("vz" to "123", "sub" to "aaaaaaaaabbbbbaaaaaaaaaaa"))
+            .setExpiration(Date(System.currentTimeMillis() + 60000))
             .signWith(hmacKey)      //use a random key
             .compact()
 
         validEmptyZonesJWT = Jwts
             .builder()
-            .setClaims(mapOf("vz" to "", "sub" to Math.random().toInt().toString()))
+            .setClaims(mapOf("vz" to "", "sub" to ""))
             .setExpiration(Date(System.currentTimeMillis()+60000))
             .signWith(hmacKey)      //use a random key
             .compact()
     }
 
-    var invalidSignatureJWT = Jwts
+    var invalidSignatureJWT: String = Jwts
         .builder()
         .signWith(Keys.secretKeyFor(SignatureAlgorithm.HS256))      //use a random key
         .compact()
@@ -131,6 +139,26 @@ class ValidateIntegrationTests : InitializingBean {
     fun acceptValidJWT() {
         val baseUrl = "http://localhost:$port"
         val request = HttpEntity(TicketDTO("1",validJWT))
+        val response = restTemplate.postForEntity<Unit>(
+            "$baseUrl/validate",
+            request )
+        Assertions.assertEquals(HttpStatus.OK, response.statusCode)
+    }
+
+    @Test
+    fun acceptUniqueTicket() {
+        val baseUrl = "http://localhost:$port"
+        val request = HttpEntity(TicketDTO("1",validJWT_withDB))
+        val response = restTemplate.postForEntity<Unit>(
+            "$baseUrl/validate",
+            request )
+        Assertions.assertEquals(HttpStatus.OK, response.statusCode)
+    }
+
+    @Test
+    fun rejectDuplicateTicket() {
+        val baseUrl = "http://localhost:$port"
+        val request = HttpEntity(TicketDTO("1",validJWT_withDB))
         val response = restTemplate.postForEntity<Unit>(
             "$baseUrl/validate",
             request )
