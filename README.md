@@ -106,4 +106,5 @@ Error rate increased from 50% to 95%, no significant increase in throughput sinc
 Keep-alive = true, timeout = default
 
 Considerable increase of 35% in throughput. Expected since the same TCP connections are reused for the different requests instead of creating one for each request. This optimization removes the TCP connection open/closing overheads. Even though a boost of 35% in throughput is considerable, due to involvment of the DB in additional checks it still remains much lower the throughput increase observed in the "without DB checks" reported above.
+
 ![Graph](server/src/main/kotlin/it/polito/wa2/g17/csv_creator/throughput_db=true_keepalive=true.svg)
