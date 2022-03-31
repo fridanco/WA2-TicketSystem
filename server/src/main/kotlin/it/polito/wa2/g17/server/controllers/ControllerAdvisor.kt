@@ -1,6 +1,7 @@
 package it.polito.wa2.g17.server.controllers
 
 import io.jsonwebtoken.JwtException
+import it.polito.wa2.g17.server.exceptions.DuplicateTicketException
 import it.polito.wa2.g17.server.exceptions.ExpiredJwtException
 import it.polito.wa2.g17.server.exceptions.InvalidRequestBodyException
 import it.polito.wa2.g17.server.exceptions.InvalidZoneException
@@ -32,6 +33,12 @@ class ControllerAdvisor {
 
     @ExceptionHandler(InvalidRequestBodyException::class)
     fun handleInvalidRequestBodyException(e: InvalidRequestBodyException) : ResponseEntity<Any> {
+        println(e.message)
+        return ResponseEntity("",HttpStatus.FORBIDDEN)
+    }
+
+    @ExceptionHandler(DuplicateTicketException::class)
+    fun handleDuplicateTicketException(e: DuplicateTicketException) : ResponseEntity<Any> {
         println(e.message)
         return ResponseEntity("",HttpStatus.FORBIDDEN)
     }

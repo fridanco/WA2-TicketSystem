@@ -12,6 +12,13 @@ class ServerApplication {
     @Bean
     fun showDbIsWorking(ticketRepository: TicketRepository): CommandLineRunner{
         return CommandLineRunner {
+
+            if(!ticketRepository.findById("CiaoMarioSeiUNoStronzo").isEmpty){
+                println("presente")
+            }
+            if(ticketRepository.findById("CiaoMarioSeiUNoStro").isEmpty){
+                println("presente1")
+            }
             ticketRepository.save(Ticket().apply {
                 id = "CiaoMarioSeiUNoStronzo1"
             })
