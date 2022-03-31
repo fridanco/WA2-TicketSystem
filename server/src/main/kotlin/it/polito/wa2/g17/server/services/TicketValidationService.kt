@@ -65,6 +65,7 @@ class TicketValidationService : InitializingBean {
         val ticketID = validatedJwt?.body?.get("sub",String::class.java)
         if(ticketID!=null && ticketID.isNotEmpty()){
             try {
+
                 ticketRepository.save(Ticket().apply {
                     id = ticketID
                 })

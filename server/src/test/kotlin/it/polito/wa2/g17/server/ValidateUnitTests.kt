@@ -34,36 +34,29 @@ class ValidateUnitTests : InitializingBean {
 
     lateinit var expiredJWT : String
     lateinit var validJWT : String
-    lateinit var validJWT2: String
-    lateinit var validJWT3: String
+    lateinit var validJWT_withDB: String
     lateinit var validEmptyZonesJWT : String
-    lateinit var validEmptyZonesJWTNoDB : String
 
     override fun afterPropertiesSet() {
         hmacKey = SecretKeySpec(Base64.getDecoder().decode(secret), SignatureAlgorithm.HS256.jcaName)
 
         expiredJWT = Jwts
             .builder()
-            .setClaims(mapOf("vz" to "123", "sub" to Math.random().toInt().toString()))
+            .setClaims(mapOf("vz" to "123", "sub" to ""))
             .setExpiration(Date())
             .signWith(hmacKey)      //use a random key
             .compact()
 
         validJWT = Jwts
             .builder()
-            .setClaims(mapOf("vz" to "123", "sub" to Math.random().toInt().toString()))
+            .setClaims(mapOf("vz" to "123", "sub" to ""))
             .setExpiration(Date(System.currentTimeMillis()+60000))
             .signWith(hmacKey)      //use a random key
             .compact()
-        validJWT2 = Jwts
+
+        validJWT_withDB = Jwts
             .builder()
-            .setClaims(mapOf("vz" to "123", "sub" to "aaaaaaaaaaaaaaaaaaaa"))
-            .setExpiration(Date(System.currentTimeMillis()+60000))
-            .signWith(hmacKey)      //use a random key
-            .compact()
-        validJWT3 = Jwts
-            .builder()
-            .setClaims(mapOf("vz" to "123", "sub" to "aaaaaaa"))
+            .setClaims(mapOf("vz" to "123", "sub" to "aaaaaaaaabbbbbaaaaaaaaaaa"))
             .setExpiration(Date(System.currentTimeMillis()+60000))
             .signWith(hmacKey)      //use a random key
             .compact()
@@ -74,16 +67,9 @@ class ValidateUnitTests : InitializingBean {
             .setExpiration(Date(System.currentTimeMillis()+60000))
             .signWith(hmacKey)      //use a random key
             .compact()
-
-        validEmptyZonesJWTNoDB = Jwts
-            .builder()
-            .setClaims(mapOf("vz" to "", "sub" to ""))
-            .setExpiration(Date(System.currentTimeMillis()+60000))
-            .signWith(hmacKey)      //use a random key
-            .compact()
     }
 
-    var invalidSignatureJWT = Jwts
+    var invalidSignatureJWT: String = Jwts
         .builder()
         .signWith(Keys.secretKeyFor(SignatureAlgorithm.HS256))      //use a random key
         .compact()
@@ -120,24 +106,22 @@ class ValidateUnitTests : InitializingBean {
     }
 
     @Test
-    fun rejectEmptyValidityZoneTokenNoDB(){
-        Assertions.assertThrows(InvalidZoneException::class.java){
-            ticketValidationService.validateTicket("1",validEmptyZonesJWTNoDB)
-        }
-    }
-
-    @Test
     fun acceptValidJWT(){
         Assertions.assertDoesNotThrow {
             ticketValidationService.validateTicket("1",validJWT)
         }
     }
+
     @Test
-    fun doubleValidJWT(){
-        Assertions.assertThrows(DuplicateTicketException::class.java){
-            ticketValidationService.validateTicket("1",validJWT2)
-            ticketValidationService.validateTicket("1",validJWT2)
+    fun acceptUniqueTicket(){
+        Assertions.assertDoesNotThrow{
+            ticketValidationService.validateTicket("1",validJWT_withDB)
         }
-       // ticketValidationService.validateTicket("1",validJWT3)
+    }
+    @Test
+    fun rejectDuplicateTicket(){
+        Assertions.assertThrows(DuplicateTicketException::class.java){
+            ticketValidationService.validateTicket("1",validJWT_withDB)
+        }
     }
 }
