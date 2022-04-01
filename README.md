@@ -73,8 +73,8 @@ We've implemented the following Unit Tests:
 - `fun acceptValidJWT()`: tests the validation module sending a valid JWT token without checking on a database
 - `fun acceptUniqueTicket()`: tests the validation module sending a valid JWT token. Using a database checks if that `sub` identifier  is unique
 - `fun rejectDuplicateTicket()`: tests the validation module sending a pair of equals JWT tokens. After checking on a database, it rejects them if they've the same `sub` identifier
-- `fun rejectEmptyPayloadRequest`: tests the validation module sending a valid JWT signature but with an empty payload
-- `fun rejectEmptySubRequest`: tests the validation module sending a valid JWT signature but with an empty `sub` field.
+- `fun rejectEmptyPayloadRequest()`: tests the validation module sending a valid JWT signature but with an empty payload
+- `fun rejectEmptySubRequest()`: tests the validation module sending a valid JWT signature but with an empty `sub` field.
 
 ### Integration tests
 Their aim is to check if different modules are working fine when combined together as a group.
@@ -142,7 +142,7 @@ ___
 
 Keep-alive = false, timeout = default
 
-As expected the projected throughput is lower than the above cases (without DB check) since the server has to perform an additional check. The DB communication is particularly expensive since it needs to communicate with the storage which has low transfer speeds (especially in random reads/writes).
+As expected, the projected throughput is lower than the above cases (without DB check) since the server has to perform an additional check. The DB communication is particularly expensive since it needs to communicate with the storage which has low transfer speeds (especially in random reads/writes).
 
 ![Graph](server/src/main/kotlin/it/polito/wa2/g17/csv_creator/throughput_db=true.svg)
 
