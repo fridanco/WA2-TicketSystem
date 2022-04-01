@@ -110,6 +110,7 @@ Keep-alive = false, timeout = default
 
 ![Graph](./server/src/main/kotlin/it/polito/wa2/g17/csv_creator/throughput_db=false.svg)
 
+___
 
 Keep-alive = false, timeout = 100ms
 
@@ -117,6 +118,7 @@ Keep-alive = false, timeout = 100ms
 
 ![Graph](server/src/main/kotlin/it/polito/wa2/g17/csv_creator/throughput_db=false_timeout=100.svg)
 
+___
 
 Keep-alive = false, timeout = 10ms
 
