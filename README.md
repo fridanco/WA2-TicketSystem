@@ -124,6 +124,7 @@ Keep-alive = false, timeout = 10ms
 
 ![Graph](server/src/main/kotlin/it/polito/wa2/g17/csv_creator/throughput_db=false_timeout=10.svg)
 
+___
 
 Keep-alive = true, timeout = default
 
@@ -131,6 +132,7 @@ Considerable increase of 110% in throughput. Expected since the same TCP connect
 
 ![Graph](server/src/main/kotlin/it/polito/wa2/g17/csv_creator/throughput_db=false_keepalive=true.svg)
 
+___
 
 ### Loadtest results - With DB check
 
@@ -138,6 +140,7 @@ Keep-alive = false, timeout = default
 
 ![Graph](server/src/main/kotlin/it/polito/wa2/g17/csv_creator/throughput_db=true.svg)
 
+___
 
 Keep-alive = false, timeout = 100ms
 
@@ -145,6 +148,7 @@ Error rate increased from 50% to 70%, no significant increase in throughput sinc
 
 ![Graph](server/src/main/kotlin/it/polito/wa2/g17/csv_creator/throughput_db=true_timeout=100.svg)
 
+___
 
 Keep-alive = false, timeout = 50ms
 
@@ -152,6 +156,7 @@ Error rate increased from 50% to 75%, no significant increase in throughput sinc
 
 ![Graph](server/src/main/kotlin/it/polito/wa2/g17/csv_creator/throughput_db=true_timeout=50.svg)
 
+___
 
 Keep-alive = false, timeout = 25ms
 
@@ -159,6 +164,7 @@ Error rate increased from 50% to 95%, no significant increase in throughput sinc
 
 ![Graph](server/src/main/kotlin/it/polito/wa2/g17/csv_creator/throughput_db=true_timeout=25.svg)
 
+___
 
 Keep-alive = true, timeout = default
 
