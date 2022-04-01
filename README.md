@@ -88,9 +88,21 @@ We've implemented the following Integration Tests:
 - `fun acceptUniqueTicket()`: tests the validation module sending an HTTP post request. Using a database checks if that `sub` identifier is unique
 - `fun rejectDuplicateTicket()`: tests the validation module sending a pair of equals HTTP post requests. After checking on a database, it rejects them if they've the same `sub` identifier.
 
-## Loadtest results
+## Loadtest
+Loadtest can be run using the `benchmark/RunLoadtest.js` NodeJS module which exports a single no parameter no arguments function. This module relies on the `RandomRequestBodyGenerator.js` module which is responsible to generate request bodies with random fields. By default this module has a probability of 50% to generate valid requests and of 50% to generate invalid requests. The `RunLoadtest.js` module will generate 6 files under the `benchmark/LoadTestResults` folder. These files store a JSON version of the output result object produced by the *Loadtest* library.
 
-### Without DB checks
+### Generating the expected throughput CSV file
+In order to generate the CSV file reporting the expected system behavior at increasing concurrency level the `it.polito.wa2.g17.csv_creator/CsvCreator.kt` script must be used. This script will generate a CSV file reporting the expected system behaviour up to a concurrency level of 200. The resulting file is name `expected_throughput.csv`.
+The content of the CSV file can be directly pasted in a graphing tool such as [RAWGraphs](https://app.rawgraphs.io/) to generate the graph of the system scalability.
+
+### Changing Loadtest parameters/flags/enable or disable DB checks
+In order to change Loadtest parameters/flags the *options* object in `RunLoadtest.js` must be properly modified with the desired parameters (e.g agentKeepAlive, timeout etc).
+For switching on/off the DB checks, the *sub* field of the *jwt_payload* object in `RandomRequestBodyGenerator.js` must be modified:
+- if NO DB check is needed: *sub* field must be set to and empty string ""
+- if DB check is needed: *sub* field must be set to the result of the *randomTicketIdentifier()* function
+
+
+### Loadtest results - Without DB check
 
 Keep-alive = false, timeout = default
 ![Graph](./server/src/main/kotlin/it/polito/wa2/g17/csv_creator/throughput_db=false.svg)
@@ -114,7 +126,7 @@ Considerable increase of 110% in throughput. Expected since the same TCP connect
 ![Graph](server/src/main/kotlin/it/polito/wa2/g17/csv_creator/throughput_db=false_keepalive=true.svg)
 
 
-### With DB checks
+### Loadtest results - With DB check
 
 Keep-alive = false, timeout = default
 ![Graph](server/src/main/kotlin/it/polito/wa2/g17/csv_creator/throughput_db=true.svg)
