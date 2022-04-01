@@ -175,7 +175,7 @@ class ValidateIntegrationTests : InitializingBean {
         val response = restTemplate.postForEntity<Unit>(
             "$baseUrl/validate",
             request )
-        Assertions.assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
+        Assertions.assertEquals(HttpStatus.OK, response.statusCode)
     }
 
     @Test
