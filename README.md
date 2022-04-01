@@ -72,7 +72,8 @@ We've implemented the following Unit Tests:
 - `fun rejectEmptyValidityZoneToken()`: tests the validation module sending a JWT token with an empty validity zone
 - `fun acceptValidJWT()`: tests the validation module sending a valid JWT token without checking on a database
 - `fun acceptUniqueTicket()`: tests the validation module sending a valid JWT token. Using a database checks if that `sub` identifier  is unique
-- `fun rejectDuplicateTicket()`: tests the validation module sending a pair of equals JWT tokens. After checking on a database, it rejects them if they've the same `sub` identifier.
+- `fun rejectDuplicateTicket()`: tests the validation module sending a pair of equals JWT tokens. After checking on a database, it rejects them if they've the same `sub` identifier
+- `fun rejectEmptyPayloadRequest`: tests the validation module sending a valid JWT signature but with an empty payload.
 
 ### Integration tests
 Their aim is to check if different modules are working fine when combined together as a group.
@@ -84,6 +85,7 @@ We've implemented the following Integration Tests:
 - `fun rejectEmptyZone()`: tests the validation module sending an HTTP post request with a JWT token with an empty validity zone
 - `fun rejectEmptyJWT()`: tests the validation module sending an HTTP post request with an empty token
 - `fun rejectEmptyRequest()`: tests the validation module sending an empty HTTP post request
+- `fun rejectEmptyPayloadRequest`: tests the validation module sending an HTTP post request with a valid JWT signature but with an empty payload
 - `fun acceptValidJWT()`: tests the validation module sending an HTTP post request without checking on a database
 - `fun acceptUniqueTicket()`: tests the validation module sending an HTTP post request. Using a database checks if that `sub` identifier is unique
 - `fun rejectDuplicateTicket()`: tests the validation module sending a pair of equals HTTP post requests. After checking on a database, it rejects them if they've the same `sub` identifier.
