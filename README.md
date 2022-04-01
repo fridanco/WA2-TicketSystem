@@ -46,7 +46,7 @@ Ticket uniqueness is enforced by querying through Spring JPA a PostreSQL DB. In 
 The PostgreSQL connection details and operation modes are specified in the *application.properties* file. Please make sure that the credentials match those configured in the PostgreSQL Docker container otherwise the connection is refused.
 
 ### Why perform 2 separate queries on the db?
-While it is true that a save operation will fail if the primary key alredy exists (duplicate PK), by default PostgreSQL will not throw any exception if this situation is presented, since a throwing ON CONFLICT behaviour must be specified. Since this behaviour must be enabled in the PostgreSQL Docker container we decided that it is better to implement a more inclusive solution by performing 2 queries, the first to check if the ticket is unique and then a save is performed.
+While it is true that a save operation will fail if the primary key alredy exists (duplicate PK), by default PostgreSQL will not throw any exception if this situation is presented, since a throwing ON CONFLICT behaviour must be specified. Since this behaviour must be enabled in the PostgreSQL Docker container we decided that it is better to implement a more inclusive solution by performing 2 queries, the first performs a check on the ticket uniqueness and the second saves the ticket.
 
 ### How to switch on the additional DB check?
 In order to simplify the testing & loadtesting procedures we have implemented the following logic to decide whether the DB check needs to performed or not:
