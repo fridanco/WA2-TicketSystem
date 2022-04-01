@@ -39,6 +39,7 @@ class ValidateUnitTests : InitializingBean {
     lateinit var validJWT_withDB_2: String
     lateinit var validEmptyZonesJWT : String
     lateinit var emptyPayloadJWT : String
+    lateinit var emptySubJWT : String
 
     override fun afterPropertiesSet() {
         hmacKey = SecretKeySpec(Base64.getDecoder().decode(secret), SignatureAlgorithm.HS256.jcaName)
@@ -83,9 +84,16 @@ class ValidateUnitTests : InitializingBean {
             .setExpiration(Date(System.currentTimeMillis()+60000))
             .signWith(hmacKey)      //use a random key
             .compact()
+
+        emptySubJWT = Jwts
+            .builder()
+            .setClaims(mapOf("vz" to "9876543210s"))
+            .setExpiration(Date(System.currentTimeMillis()+60000))
+            .signWith(hmacKey)      //use a random key
+            .compact()
     }
 
-    //todo: perchè fuori da afterPropertiesSet?
+
     var invalidSignatureJWT: String = Jwts
         .builder()
         .signWith(Keys.secretKeyFor(SignatureAlgorithm.HS256))      //use a random key
@@ -147,6 +155,13 @@ class ValidateUnitTests : InitializingBean {
     fun rejectEmptyPayloadJWT(){
         Assertions.assertThrows(InvalidZoneException::class.java) {
             ticketValidationService.validateTicket("1",emptyPayloadJWT)
+        }
+    }
+
+    @Test
+    fun rejectEmptySubJWT(){
+        Assertions.assertThrows(InvalidZoneException::class.java) {
+            ticketValidationService.validateTicket("1",emptySubJWT)
         }
     }
 }

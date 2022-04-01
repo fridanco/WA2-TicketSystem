@@ -13,12 +13,17 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.security.Key
 import java.util.*
+import java.util.concurrent.locks.ReentrantLock
 import javax.crypto.spec.SecretKeySpec
+import kotlin.concurrent.withLock
 
 @Service
 class TicketValidationService : InitializingBean {
+
+    val lock = ReentrantLock()
 
     //Encode JWT with this secret and select Base64 encoded
     @Value("\${server.jwt.secretkey}")
@@ -33,6 +38,7 @@ class TicketValidationService : InitializingBean {
         hmacKey = SecretKeySpec(Base64.getDecoder().decode(secret), SignatureAlgorithm.HS256.jcaName)
     }
 
+    @Transactional
     fun validateTicket(zone: String, token: String){
 
         val validatedJwt : Jws<Claims>
@@ -64,12 +70,12 @@ class TicketValidationService : InitializingBean {
         //Check ticket unicity (check in DB)
         val ticketID = validatedJwt?.body?.get("sub",String::class.java)
         if(ticketID!=null && ticketID.isNotEmpty()){
-                if(!ticketRepository.findById(ticketID).isEmpty){
-                    throw DuplicateTicketException();
-                }
-                ticketRepository.save(Ticket().apply {
-                    id = ticketID
-                })
+            if(!ticketRepository.findById(ticketID).isEmpty){
+                throw DuplicateTicketException();
+            }
+            ticketRepository.save(Ticket().apply {
+                id = ticketID
+            })
 
         }
     }
