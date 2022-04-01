@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
 import it.polito.wa2.g17.server.exceptions.DuplicateTicketException
+import it.polito.wa2.g17.server.exceptions.ExpiredJwtException
 import it.polito.wa2.g17.server.exceptions.InvalidZoneException
 import it.polito.wa2.g17.server.repositories.TicketRepository
 import it.polito.wa2.g17.server.services.TicketValidationService
@@ -37,6 +38,7 @@ class ValidateUnitTests : InitializingBean {
     lateinit var validJWT_withDB_1: String
     lateinit var validJWT_withDB_2: String
     lateinit var validEmptyZonesJWT : String
+    lateinit var emptyPayloadJWT : String
 
     override fun afterPropertiesSet() {
         hmacKey = SecretKeySpec(Base64.getDecoder().decode(secret), SignatureAlgorithm.HS256.jcaName)
@@ -72,6 +74,12 @@ class ValidateUnitTests : InitializingBean {
         validEmptyZonesJWT = Jwts
             .builder()
             .setClaims(mapOf("vz" to "", "sub" to ""))
+            .setExpiration(Date(System.currentTimeMillis()+60000))
+            .signWith(hmacKey)      //use a random key
+            .compact()
+
+        emptyPayloadJWT = Jwts
+            .builder()
             .setExpiration(Date(System.currentTimeMillis()+60000))
             .signWith(hmacKey)      //use a random key
             .compact()
@@ -132,6 +140,13 @@ class ValidateUnitTests : InitializingBean {
         Assertions.assertThrows(DuplicateTicketException::class.java){
             ticketValidationService.validateTicket("1",validJWT_withDB_2)
             ticketValidationService.validateTicket("1",validJWT_withDB_2)
+        }
+    }
+
+    @Test
+    fun rejectEmptyPayloadJWT(){
+        Assertions.assertThrows(InvalidZoneException::class.java) {
+            ticketValidationService.validateTicket("1",emptyPayloadJWT)
         }
     }
 }

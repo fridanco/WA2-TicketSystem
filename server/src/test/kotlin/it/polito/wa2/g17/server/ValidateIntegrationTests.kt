@@ -37,6 +37,7 @@ class ValidateIntegrationTests : InitializingBean {
     lateinit var validJWT_withDB_1 : String
     lateinit var validJWT_withDB_2 : String
     lateinit var validEmptyZonesJWT : String
+    lateinit var emptyPayloadJWT : String
 
     override fun afterPropertiesSet() {
         hmacKey = SecretKeySpec(Base64.getDecoder().decode(secret), SignatureAlgorithm.HS256.jcaName)
@@ -72,6 +73,12 @@ class ValidateIntegrationTests : InitializingBean {
         validEmptyZonesJWT = Jwts
             .builder()
             .setClaims(mapOf("vz" to "", "sub" to ""))
+            .setExpiration(Date(System.currentTimeMillis()+60000))
+            .signWith(hmacKey)      //use a random key
+            .compact()
+
+        emptyPayloadJWT = Jwts
+            .builder()
             .setExpiration(Date(System.currentTimeMillis()+60000))
             .signWith(hmacKey)      //use a random key
             .compact()
@@ -137,6 +144,16 @@ class ValidateIntegrationTests : InitializingBean {
     fun rejectEmptyRequest() {
         val baseUrl = "http://localhost:$port"
         val request = HttpEntity(TicketDTO("",""))
+        val response = restTemplate.postForEntity<Unit>(
+            "$baseUrl/validate",
+            request )
+        Assertions.assertEquals(HttpStatus.FORBIDDEN, response.statusCode)
+    }
+
+    @Test
+    fun rejectEmptyPayloadRequest() {
+        val baseUrl = "http://localhost:$port"
+        val request = HttpEntity(TicketDTO("1",emptyPayloadJWT))
         val response = restTemplate.postForEntity<Unit>(
             "$baseUrl/validate",
             request )
