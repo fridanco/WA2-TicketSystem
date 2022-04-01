@@ -40,7 +40,7 @@ An additional JWT expiration check is performed after the above check to make su
 
 The ticket validity zone, which makes sure that the zone received in the request body matches the valid zones of the ticket, is case sensitive.
 
-Ticket uniqueness is enforced by querying through Spring JPA a PostreSQL DB. In the DB a Ticket table having only 1 column (TicketID) is used. First a findById query is executed to make sure that the received and decoded TicketID (sub field in the JWT) is unique and if so it is inserted in the DB through a save query.
+Ticket uniqueness is enforced by querying through Spring JPA a PostreSQL DB. In the DB a Ticket table having only 1 column (TicketID) is used. First a findById query is executed to make sure that the received and decoded TicketID (sub field in the JWT) is unique and if so it is inserted in the DB through a save query. In order to ensure the atomicity of the two queries (since the server is multithreaded) the @Transactional annotation is used on the corresponding Service function. 
 
 ### DB connection properties
 The PostgreSQL connection details and operation modes are specified in the *application.properties* file. Please make sure that the credentials match those configured in the PostgreSQL Docker container otherwise the connection is refused.
@@ -73,7 +73,8 @@ We've implemented the following Unit Tests:
 - `fun acceptValidJWT()`: tests the validation module sending a valid JWT token without checking on a database
 - `fun acceptUniqueTicket()`: tests the validation module sending a valid JWT token. Using a database checks if that `sub` identifier  is unique
 - `fun rejectDuplicateTicket()`: tests the validation module sending a pair of equals JWT tokens. After checking on a database, it rejects them if they've the same `sub` identifier
-- `fun rejectEmptyPayloadRequest`: tests the validation module sending a valid JWT signature but with an empty payload.
+- `fun rejectEmptyPayloadRequest`: tests the validation module sending a valid JWT signature but with an empty payload
+- `fun rejectEmptySubRequest`: tests the validation module sending a valid JWT signature but with an empty `sub` field.
 
 ### Integration tests
 Their aim is to check if different modules are working fine when combined together as a group.
@@ -86,6 +87,7 @@ We've implemented the following Integration Tests:
 - `fun rejectEmptyJWT()`: tests the validation module sending an HTTP post request with an empty token
 - `fun rejectEmptyRequest()`: tests the validation module sending an empty HTTP post request
 - `fun rejectEmptyPayloadRequest`: tests the validation module sending an HTTP post request with a valid JWT signature but with an empty payload
+- `fun rejectEmptSubRequest`: tests the validation module sending an HTTP post request with a valid JWT signature but with an empty `sub`
 - `fun acceptValidJWT()`: tests the validation module sending an HTTP post request without checking on a database
 - `fun acceptUniqueTicket()`: tests the validation module sending an HTTP post request. Using a database checks if that `sub` identifier is unique
 - `fun rejectDuplicateTicket()`: tests the validation module sending a pair of equals HTTP post requests. After checking on a database, it rejects them if they've the same `sub` identifier.
@@ -106,13 +108,13 @@ For switching on/off the DB checks, the *sub* field of the *jwt_payload* object 
 
 ### Loadtest results - Without DB check
 
-Keep-alive = false, timeout = default
+#### Keep-alive = false, timeout = default
 
 ![Graph](./server/src/main/kotlin/it/polito/wa2/g17/csv_creator/throughput_db=false.svg)
 
 ___
 
-Keep-alive = false, timeout = 100ms
+#### Keep-alive = false, timeout = 100ms
 
 0% of requests timed out. This was expected since the mean latency of the system is just 33ms. 10% increase in throughput.
 
@@ -120,9 +122,9 @@ Keep-alive = false, timeout = 100ms
 
 ___
 
-Keep-alive = false, timeout = 10ms
+#### Keep-alive = false, timeout = 10ms
 
-45% of requests timed out, 33ms mean latency. 10% increase in throughput.
+45% of requests timed out, 33ms mean latency. A negligible increase in throughput is expected since the timeout is enforced in the client level and not at the server level. The server will continue as normal but if the reply is delayed more than the timeout the client will simply ignore that reply (it will have already terminated its TCP connection with the server). 
 
 ![Graph](server/src/main/kotlin/it/polito/wa2/g17/csv_creator/throughput_db=false_timeout=10.svg)
 
@@ -140,13 +142,15 @@ ___
 
 Keep-alive = false, timeout = default
 
+As expected the projected throughput is lower than the above cases (without DB check) since the server has to perform an additional check. The DB communication is particularly expensive since it needs to communicate with the storage which has low transfer speeds (especially in random reads/writes).
+
 ![Graph](server/src/main/kotlin/it/polito/wa2/g17/csv_creator/throughput_db=true.svg)
 
 ___
 
 Keep-alive = false, timeout = 100ms
 
-Error rate increased from 50% to 70%, no significant increase in throughput since the timeout most likely occurs while the DB check is in progress so resource contention does not improve.
+20% of packets lost, 70% of packets are erroneous. It is interesting that most of the requests that time out are "correct" requests. This means that most of the delay is caused by the DB because most of the "incorrect" packets never reach the DB check and therefore return an HTTP 403 code much quicker. There is no significant increase in throughput since the timeout most likely occurs while the DB check is in progress so resource contention does not improve.
 
 ![Graph](server/src/main/kotlin/it/polito/wa2/g17/csv_creator/throughput_db=true_timeout=100.svg)
 
@@ -154,7 +158,7 @@ ___
 
 Keep-alive = false, timeout = 50ms
 
-Error rate increased from 50% to 75%, no significant increase in throughput since the timeout most likely occurs while the DB check is in progress so resource contention does not improve.
+25% of packets lost, 75% of packets are erroneous. It is interesting that most of the requests that time out are "correct" requests. This means that most of the delay is caused by the DB because most of the "incorrect" packets never reach the DB check and therefore return an HTTP 403 code much quicker. There is no significant increase in throughput since the timeout most likely occurs while the DB check is in progress so resource contention does not improve.
 
 ![Graph](server/src/main/kotlin/it/polito/wa2/g17/csv_creator/throughput_db=true_timeout=50.svg)
 
@@ -162,7 +166,7 @@ ___
 
 Keep-alive = false, timeout = 25ms
 
-Error rate increased from 50% to 95%, no significant increase in throughput since the timeout most likely occurs while the DB check is in progress so resource contention does not improve.
+55% of packets lost, 95% of packets are erroneous. In this case we see also "incorrect" requests timing out since the timeout value is much lower (at 25ms). There is no significant increase in throughput since the timeout most likely occurs while the DB check is in progress so resource contention does not improve.
 
 ![Graph](server/src/main/kotlin/it/polito/wa2/g17/csv_creator/throughput_db=true_timeout=25.svg)
 
